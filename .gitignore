@@ -9,6 +9,7 @@ dist/
 .env
 .env.local
 .env.*.local
+src/environments/env.secrets.ts
 
 # IDE
 .idea/

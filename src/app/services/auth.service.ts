@@ -36,20 +36,46 @@ export interface User {
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  private readonly readyPromise: Promise<void>;
 
   constructor(private supabase: SupabaseService) {
-    this.restoreSession();
+    this.readyPromise = this.restoreSession();
+  }
+
+  /** Wait until Supabase session restore finishes before querying RLS-protected tables */
+  whenReady(): Promise<void> {
+    return this.readyPromise;
+  }
+
+  isStaffOrAdmin(): boolean {
+    const role = (this.getCurrentUser()?.role || '').toLowerCase();
+    return role === 'admin' || role === 'staff';
   }
 
   private async restoreSession(): Promise<void> {
-    const session = await this.supabase.getSession();
-    if (session?.user) {
-      const user = await this.fetchProfile(session.user.id);
-      if (user) {
-        localStorage.setItem('token', session.access_token);
-        localStorage.setItem('user', JSON.stringify(user));
-        this.currentUserSubject.next(user);
+    try {
+      let session = await this.supabase.getSession();
+
+      if (!session?.user) {
+        const { data } = await this.supabase.auth.refreshSession();
+        session = data.session;
       }
+
+      if (session?.user) {
+        const user = await this.fetchProfile(session.user.id);
+        if (user) {
+          localStorage.setItem('token', session.access_token);
+          localStorage.setItem('user', JSON.stringify(user));
+          this.currentUserSubject.next(user);
+          return;
+        }
+      }
+
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      this.currentUserSubject.next(null);
+    } catch (err) {
+      console.warn('Session restore failed:', err);
     }
   }
 

@@ -1,3 +1,5 @@
+import { envSecrets } from './env.secrets';
+
 export const environment = {
   production: true,
   supabase: {
@@ -11,9 +13,9 @@ export const environment = {
     connectionUrl: 'postgresql://postgres:[YOUR-PASSWORD]@db.uqdaicrtspezrxqasmfx.supabase.co:5432/postgres',
   },
   openRouter: {
-    apiKey: '',
+    apiKey: envSecrets.openRouterApiKey,
     baseUrl: 'https://openrouter.ai/api/v1',
-    model: 'meta-llama/llama-3.1-8b-instruct',
+    model: envSecrets.openRouterModel,
     siteUrl: 'https://barangay-system.app',
     siteName: 'Barangay System',
   },

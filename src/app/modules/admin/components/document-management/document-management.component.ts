@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CertificateService, AppointmentRequest, Certificate } from '../../../../services/certificate.service';
-import { forkJoin } from 'rxjs';
+import { AuthService } from '../../../../services/auth.service';
+import { forkJoin, Subscription } from 'rxjs';
+import { filter, skip } from 'rxjs/operators';
 
 @Component({
   selector: 'app-document-management',
   templateUrl: './document-management.component.html',
   styleUrls: ['./document-management.component.scss']
 })
-export class DocumentManagementComponent implements OnInit {
+export class DocumentManagementComponent implements OnInit, OnDestroy {
   appointmentRequests: AppointmentRequest[] = [];
   filteredRequests: AppointmentRequest[] = [];
   certificates: Certificate[] = [];
@@ -16,11 +18,20 @@ export class DocumentManagementComponent implements OnInit {
   selectedStatus = 'all';
   showDetailsModal = false;
   selectedRequest: AppointmentRequest | null = null;
+  private authSub?: Subscription;
 
-  constructor(private certificateService: CertificateService) {}
+  constructor(
+    private certificateService: CertificateService,
+    private auth: AuthService,
+  ) {}
 
   ngOnInit(): void {
-    this.loadData();
+    this.auth.whenReady().then(() => this.loadData());
+    this.authSub = this.auth.currentUser$.pipe(skip(1), filter(u => !!u)).subscribe(() => this.loadData());
+  }
+
+  ngOnDestroy(): void {
+    this.authSub?.unsubscribe();
   }
 
   loadData() {

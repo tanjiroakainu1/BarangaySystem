@@ -1,3 +1,5 @@
+import { envSecrets } from './env.secrets';
+
 export const environment = {
   production: false,
   supabase: {
@@ -10,11 +12,11 @@ export const environment = {
     name: 'postgres',
     connectionUrl: 'postgresql://postgres:[YOUR-PASSWORD]@db.uqdaicrtspezrxqasmfx.supabase.co:5432/postgres',
   },
-  /** OpenRouter — loaded from env; never log or display this key in UI */
+  /** OpenRouter — apiKey loaded from .env via scripts/sync-env.js */
   openRouter: {
-    apiKey: '',
+    apiKey: envSecrets.openRouterApiKey,
     baseUrl: 'https://openrouter.ai/api/v1',
-    model: 'meta-llama/llama-3.1-8b-instruct',
+    model: envSecrets.openRouterModel,
     siteUrl: 'http://localhost:4200',
     siteName: 'Barangay System',
   },

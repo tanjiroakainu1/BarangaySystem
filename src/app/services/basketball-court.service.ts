@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 import { SupabaseService } from './supabase.service';
 import { mapCourt, mapReservation, reservationToDb } from './supabase.mapper';
 
@@ -52,14 +53,39 @@ export class BasketballCourtService {
   private courts: BasketballCourt[] = [];
   private loaded = false;
 
-  constructor(private supabase: SupabaseService) {
+  constructor(
+    private supabase: SupabaseService,
+    private auth: AuthService,
+  ) {
     this.loadFromSupabase();
   }
 
+  private async loadReservationsFromDb(): Promise<any[]> {
+    await this.auth.whenReady();
+    if (this.auth.isStaffOrAdmin()) {
+      const { data, error } = await this.supabase.rpc('list_basketball_reservations', {});
+      if (!error && data?.length) return data;
+      if (error && error.code !== '42883' && error.code !== 'PGRST202') {
+        console.error('list_basketball_reservations:', error);
+      }
+    }
+    const userId = this.auth.getCurrentUser()?.id;
+    const query = userId
+      ? this.supabase.from('basketball_court_reservations').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+      : this.supabase.from('basketball_court_reservations').select('*').order('created_at', { ascending: false });
+    const { data, error } = await query;
+    if (error) {
+      console.error('basketball_court_reservations:', error);
+      return [];
+    }
+    return data || [];
+  }
+
   private async loadFromSupabase(): Promise<void> {
-    const [courtsRes, reservationsRes] = await Promise.all([
+    await this.auth.whenReady();
+    const [courtsRes, reservationsData] = await Promise.all([
       this.supabase.from('basketball_courts').select('*').order('court_number'),
-      this.supabase.from('basketball_court_reservations').select('*').order('created_at', { ascending: false }),
+      this.loadReservationsFromDb(),
     ]);
 
     if (courtsRes.data?.length) {
@@ -71,8 +97,8 @@ export class BasketballCourtService {
       });
     }
 
-    if (reservationsRes.data?.length) {
-      this.reservations = reservationsRes.data.map(row => mapReservation(row));
+    if (reservationsData?.length) {
+      this.reservations = reservationsData.map((row: any) => mapReservation(row));
     }
 
     this.loaded = true;

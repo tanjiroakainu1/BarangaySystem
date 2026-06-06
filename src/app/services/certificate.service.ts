@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 import { SupabaseService } from './supabase.service';
 import {
   mapAppointment,
@@ -121,7 +122,10 @@ export class CertificateService {
   private certificatesSubject = new BehaviorSubject<Certificate[]>([]);
   public certificates$ = this.certificatesSubject.asObservable();
 
-  constructor(private supabase: SupabaseService) {
+  constructor(
+    private supabase: SupabaseService,
+    private auth: AuthService,
+  ) {
     this.loadInitialCertificates();
   }
 
@@ -130,10 +134,16 @@ export class CertificateService {
   }
 
   private loadInitialCertificates(): void {
-    this.getAllCertificates().subscribe({
+    from(this.auth.whenReady()).pipe(
+      switchMap(() => this.getAllCertificates()),
+    ).subscribe({
       next: data => this.certificatesSubject.next(data),
       error: err => console.error('Failed to load certificates:', err),
     });
+  }
+
+  private isStaffOrAdmin(): boolean {
+    return this.auth.isStaffOrAdmin();
   }
 
   getCertificates(): Observable<Certificate[]> {
@@ -141,15 +151,38 @@ export class CertificateService {
   }
 
   getAllCertificates(): Observable<Certificate[]> {
-    return from(
-      this.supabase.from('certificates').select('*').order('created_at', { ascending: false })
-    ).pipe(
+    return from(this.auth.whenReady()).pipe(
+      switchMap(() => {
+        if (this.isStaffOrAdmin()) {
+          return from(this.supabase.rpc('list_certificates', {})).pipe(
+            catchError((rpcErr) => {
+              const missing = rpcErr?.code === '42883' || rpcErr?.code === 'PGRST202';
+              if (!missing) return throwError(() => rpcErr);
+              return from(
+                this.supabase.from('certificates').select('*').order('created_at', { ascending: false })
+              );
+            })
+          );
+        }
+        const userId = this.auth.getCurrentUser()?.id;
+        if (!userId) return of({ data: [], error: null });
+        return from(
+          this.supabase.from('certificates').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+        );
+      }),
       map(({ data, error }) => {
-        const certs = error ? [] : (data || []).map(mapCertificate);
+        if (error) {
+          console.error('certificates load error:', error);
+          return [];
+        }
+        const certs = (data || []).map(mapCertificate);
         this.certificatesSubject.next(certs);
         return certs;
       }),
-      catchError(() => of([]))
+      catchError((err) => {
+        console.error('certificates load failed:', err);
+        return of([]);
+      }),
     );
   }
 
@@ -241,11 +274,36 @@ export class CertificateService {
   }
 
   getAppointmentRequests(): Observable<AppointmentRequest[]> {
-    return from(
-      this.supabase.from('appointment_requests').select('*').order('created_at', { ascending: false })
-    ).pipe(
-      map(({ data, error }) => error ? [] : (data || []).map(mapAppointment)),
-      catchError(() => of([]))
+    return from(this.auth.whenReady()).pipe(
+      switchMap(() => {
+        if (this.isStaffOrAdmin()) {
+          return from(this.supabase.rpc('list_appointment_requests', {})).pipe(
+            catchError((rpcErr) => {
+              const missing = rpcErr?.code === '42883' || rpcErr?.code === 'PGRST202';
+              if (!missing) return throwError(() => rpcErr);
+              return from(
+                this.supabase.from('appointment_requests').select('*').order('created_at', { ascending: false })
+              );
+            })
+          );
+        }
+        const userId = this.auth.getCurrentUser()?.id;
+        if (!userId) return of({ data: [], error: null });
+        return from(
+          this.supabase.from('appointment_requests').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+        );
+      }),
+      map(({ data, error }) => {
+        if (error) {
+          console.error('appointment_requests load error:', error);
+          return [];
+        }
+        return (data || []).map(mapAppointment);
+      }),
+      catchError((err) => {
+        console.error('appointment_requests load failed:', err);
+        return of([]);
+      }),
     );
   }
 
@@ -254,11 +312,20 @@ export class CertificateService {
   }
 
   getUserAppointmentRequests(userId: number | string): Observable<AppointmentRequest[]> {
-    return from(
-      this.supabase.from('appointment_requests').select('*').eq('user_id', userId).order('created_at', { ascending: false })
-    ).pipe(
-      map(({ data }) => (data || []).map(mapAppointment)),
-      catchError(() => of([]))
+    return from(this.auth.whenReady()).pipe(
+      switchMap(() =>
+        from(
+          this.supabase.from('appointment_requests').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+        )
+      ),
+      map(({ data, error }) => {
+        if (error) {
+          console.error('user appointment_requests error:', error);
+          return [];
+        }
+        return (data || []).map(mapAppointment);
+      }),
+      catchError(() => of([])),
     );
   }
 
