@@ -1,0 +1,55 @@
+/* Enhanced Certificate of Indigency styling */
+.certificate-document {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  position: relative;
+  border: 3px double #3d4641;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.certificate-header-strip {
+  background: linear-gradient(135deg, #3d4641 0%, #4d5851 100%);
+  color: #fff;
+  padding: 0.5rem 1.5rem;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.certificate-seal {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-width: 4px !important;
+  border-color: #3d4641 !important;
+  background: linear-gradient(145deg, #b91c1c 0%, #991b1b 100%) !important;
+}
+
+.certificate-title {
+  letter-spacing: 0.08em;
+  color: #1e293b;
+  border-bottom: 2px solid #3d4641;
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.certificate-field-label {
+  color: #334155;
+  min-width: 7rem;
+}
+
+.certificate-divider {
+  border: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3d4641, transparent);
+  margin: 1.5rem 0;
+}
+
+.certificate-footer-strip {
+  background: #f1f5f9;
+  border-top: 1px solid #cbd5e1;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Indigency-specific accent */
+.indigency-accent {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-left: 4px solid #d97706;
+}

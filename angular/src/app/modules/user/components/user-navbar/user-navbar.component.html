@@ -1,0 +1,39 @@
+<nav class="bg-white shadow-sm border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex items-center">
+        <h1 class="text-xl font-bold gradient-text">Resident Portal</h1>
+      </div>
+      
+      <div class="flex items-center space-x-6">
+        <!-- User Information -->
+        <div class="flex items-center space-x-3">
+          <div class="text-right">
+            <div class="text-sm font-medium text-gray-900">
+              Welcome, {{ currentUser?.firstName }} {{ currentUser?.lastName }}
+            </div>
+            <div class="text-xs text-gray-500">{{ currentUser?.email }}</div>
+          </div>
+          <div class="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+            <span class="text-sm font-medium text-emerald-600">
+              {{ currentUser?.firstName?.charAt(0) }}{{ currentUser?.lastName?.charAt(0) }}
+            </span>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex items-center space-x-3">
+          <button 
+            class="btn-primary text-sm px-4 py-2">
+            Dashboard
+          </button>
+          <button 
+            (click)="logout()"
+            class="btn-outline text-sm px-4 py-2">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

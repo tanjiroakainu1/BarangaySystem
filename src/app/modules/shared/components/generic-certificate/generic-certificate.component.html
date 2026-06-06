@@ -1,0 +1,97 @@
+<div class="min-h-screen bg-slate-100">
+  <div class="bg-white shadow-sm border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 py-4">
+      <div class="flex justify-between items-center">
+        <button type="button" (click)="goBack()" class="btn-ghost btn-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          Back
+        </button>
+        <button type="button" (click)="downloadPDF()" [disabled]="!certificate" class="btn-primary btn-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <div *ngIf="isLoading" class="bg-white rounded-xl shadow-lg p-12 text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-2 border-primary-600 border-t-transparent mx-auto mb-4"></div>
+      <p class="text-slate-600 font-medium">Loading certificate...</p>
+    </div>
+    <div *ngIf="error && !isLoading" class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+      <p class="text-red-600 font-medium">{{ error }}</p>
+    </div>
+
+    <!-- Certificate document: Barangay Clearance / Certificate of Residency -->
+    <div *ngIf="certificate && !isLoading && !error" id="certificate-content" class="certificate-document bg-white overflow-hidden">
+      <!-- Official header strip -->
+      <div class="certificate-header-strip">
+        <div class="text-xs font-semibold tracking-widest uppercase opacity-90">Republic of the Philippines</div>
+        <div class="text-sm font-bold mt-0.5">Barangay Old Cabalan, Olongapo City</div>
+      </div>
+
+      <div class="p-10 sm:p-12 text-slate-800">
+        <!-- Title -->
+        <div class="text-center mb-10">
+          <h1 class="certificate-title text-2xl sm:text-3xl font-bold uppercase tracking-wide">{{ certificate.certificateType }}</h1>
+          <div class="w-24 h-0.5 bg-slate-400 mx-auto mt-3 rounded-full"></div>
+        </div>
+
+        <!-- Resident info + seal -->
+        <div class="flex flex-wrap justify-between gap-8 mb-8">
+          <div class="flex-1 min-w-[200px] space-y-3">
+            <p class="text-sm leading-relaxed"><span class="certificate-field-label font-bold">NAME:</span> {{ certificate.userName || '—' }}</p>
+            <p class="text-sm leading-relaxed"><span class="certificate-field-label font-bold">ADDRESS:</span> {{ certificate.address || '—' }}</p>
+            <p class="text-sm leading-relaxed"><span class="certificate-field-label font-bold">GENDER:</span> {{ certificate.gender || '—' }}</p>
+            <p class="text-sm leading-relaxed"><span class="certificate-field-label font-bold">CIVIL STATUS:</span> {{ certificate.civilStatus || '—' }}</p>
+            <p class="text-sm leading-relaxed"><span class="certificate-field-label font-bold">DATE OF BIRTH:</span> {{ certificate.dateOfBirth || '—' }}</p>
+            <p class="text-sm leading-relaxed"><span class="certificate-field-label font-bold">PURPOSE{{ certificate.certificateType === 'Certificate of Residency' ? '/REMARKS:' : ':' }}</span> {{ certificate.purpose || certificate.notes || '—' }}</p>
+          </div>
+          <div class="flex-shrink-0 flex flex-col items-center gap-4">
+            <div *ngIf="certificate.certificateType === 'Certificate of Residency'" class="photo-placeholder w-24 h-28 rounded flex items-center justify-center">Photo</div>
+            <div class="certificate-seal w-32 h-32 rounded-full border-4 flex items-center justify-center text-white text-center overflow-hidden">
+              <div class="text-[9px] font-bold leading-tight px-2">ASSOCIATION OF BARANGAY SECRETARIES<br>OLONGAPO CITY</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barangay Clearance: REMARKS -->
+        <div *ngIf="certificate.certificateType === 'Barangay Clearance'" class="mb-6 py-3 px-4 bg-amber-50 border-l-4 border-amber-500 rounded-r">
+          <p class="text-sm"><span class="font-bold text-slate-700">REMARKS:</span> <strong>{{ certificate.notes || 'NO DEROGATORY RECORD on file as of this date' }}</strong>.</p>
+        </div>
+
+        <hr class="certificate-divider" />
+        <p class="text-sm font-bold text-slate-700 mb-4">TO WHOM IT MAY CONCERN:</p>
+
+        <div class="space-y-4 text-sm text-justify leading-relaxed text-slate-700">
+          <ng-container [ngSwitch]="certificate.certificateType">
+            <ng-container *ngSwitchCase="'Barangay Clearance'">
+              <p>This is to certify that the person whose name, picture, and signature appear hereon is a bonafide resident in this barangay and known to be of good moral character and law-abiding citizen in the community.</p>
+              <p>This certification is issued upon the request of the above person for the mentioned purpose and for whatever legal purpose it may serve.</p>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Certificate of Residency'">
+              <p>This is to certify that the person whose name and picture appear hereon is a bonafide resident of Barangay Old Cabalan.</p>
+              <p>This further certifies that he/she is presently residing in the barangay since {{ certificate.residentSince || '—' }}.</p>
+              <p>This certification is issued upon the request of the above person for the mentioned purpose and for whatever legal purpose it may serve.</p>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              <p>This is to certify that <strong>{{ certificate.userName }}</strong> is a bona fide resident of Barangay Old Cabalan, Olongapo City and is hereby granted this {{ certificate.certificateType }}.</p>
+              <p>This certification is issued upon the request of the above person for the mentioned purpose and for whatever legal purpose it may serve.</p>
+            </ng-container>
+          </ng-container>
+        </div>
+
+        <!-- Issuance line -->
+        <div class="mt-10 pt-6 border-t border-slate-300">
+          <p class="text-sm font-bold text-slate-800">ISSUED this {{ formatIssuedDate(certificate.issuedDate) }} at the Barangay Hall of Old Cabalan, Olongapo City.</p>
+        </div>
+      </div>
+
+      <!-- Footer strip -->
+      <div class="certificate-footer-strip px-6 py-3 text-center">
+        Barangay Old Cabalan, Olongapo City — Official Document
+      </div>
+    </div>
+  </div>
+</div>

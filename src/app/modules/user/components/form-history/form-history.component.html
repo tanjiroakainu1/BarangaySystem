@@ -1,0 +1,138 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Form History</h1>
+    <p class="page-subtitle">View your appointment requests and certificate history</p>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="mb-6">
+    <nav class="flex space-x-8" aria-label="Tabs">
+      <button
+        (click)="selectTab('appointments')"
+        [class]="selectedTab === 'appointments' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+        class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+        Appointment Requests
+        <span class="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs font-medium">
+          {{ appointmentRequests.length }}
+        </span>
+      </button>
+      <button
+        (click)="selectTab('certificates')"
+        [class]="selectedTab === 'certificates' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+        class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+        My Certificates
+        <span class="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs font-medium">
+          {{ visibleCertificates.length }}
+        </span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Appointment Requests -->
+  <div *ngIf="selectedTab === 'appointments'" class="card">
+    <div class="flex justify-between items-center mb-6 p-6 pb-0">
+      <h2 class="text-xl font-semibold text-gray-900">Appointment Requests</h2>
+      <div class="text-sm text-gray-500">
+        Total: {{ appointmentRequests.length }} requests
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Certificate</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appointment Date & Time</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requested</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let request of appointmentRequests">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              {{ request.certificateName || request.certificateType || 'Certificate' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ formatDateTime(request.requestedDate, request.requestedTime) }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span [class]="getStatusBadgeClass(request.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                {{ getStatusText(request.status) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ getRequestedDisplay(request) }}
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500 max-w-xs">
+              <div class="truncate">{{ request.notes || 'No notes' }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <button
+                *ngIf="canViewCertificate(request.status)"
+                type="button"
+                (click)="viewCertificateForRequest(request)"
+                class="btn-cert btn-sm">
+                View Certificate
+              </button>
+              <span *ngIf="!canViewCertificate(request.status)" class="text-gray-400">
+                Pending approval
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State for Appointments -->
+    <div *ngIf="appointmentRequests.length === 0" class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No appointment requests found</h3>
+      <p class="mt-1 text-sm text-gray-500">You haven't made any appointment requests yet.</p>
+    </div>
+  </div>
+
+  <!-- Approved Certificates -->
+  <div *ngIf="selectedTab === 'certificates'" class="card">
+    <div class="flex justify-between items-center mb-6 p-6 pb-0">
+      <h2 class="text-xl font-semibold text-gray-900">My Certificates</h2>
+      <div class="text-sm text-gray-500">Available after admin approval</div>
+    </div>
+    <div class="table-wrap">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Certificate</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issued Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let cert of visibleCertificates">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ cert.certificateType }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span [class]="getStatusBadgeClass(cert.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                {{ getStatusText(cert.status) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(cert.requestDate) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(cert.issuedDate) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <button type="button" (click)="showCertificate(cert)" class="btn-cert btn-sm">
+                View / Export
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="visibleCertificates.length === 0" class="text-center py-12 text-sm text-gray-500">
+      No approved certificates yet. Request an appointment and wait for admin approval.
+    </div>
+  </div>
+</div>

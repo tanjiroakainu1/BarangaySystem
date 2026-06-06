@@ -1,0 +1,221 @@
+<div class="min-h-screen bg-gray-100">
+  <!-- Clean Header -->
+  <div class="bg-white shadow-sm border-b">
+    <div class="max-w-4xl mx-auto px-4 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+          <button 
+            (click)="goBack()" 
+            class="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Dashboard
+          </button>
+        </div>
+        <div class="flex items-center space-x-3">
+          <span class="text-sm text-gray-500">Business Clearance Certificate</span>
+          <button 
+            (click)="downloadPDF()" 
+            [disabled]="!certificate"
+            class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Download PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Certificate Content -->
+  <div class="max-w-4xl mx-auto px-4 py-8">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="bg-white rounded-lg shadow-lg p-8 text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+      <p class="text-gray-600">Loading certificate...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !isLoading" class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+      <svg class="w-12 h-12 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+      </svg>
+      <h3 class="text-lg font-semibold text-red-800 mb-2">Certificate Not Available</h3>
+      <p class="text-red-600">{{ error }}</p>
+    </div>
+
+    <!-- Certificate Content -->
+    <div *ngIf="certificate && !isLoading && !error" id="certificate-content" class="bg-white shadow-2xl rounded-lg overflow-hidden border-2 border-gray-200">
+      <!-- Certificate Header with Enhanced Design -->
+      <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div class="text-sm opacity-90">
+            <div class="font-semibold">Issued: {{ certificate.issuedDate | date:'MMMM dd, yyyy' }}</div>
+            <div class="text-xs">{{ certificate.issuedDate | date:'EEEE, h:mm a' }}</div>
+          </div>
+          <div class="text-sm opacity-90 text-right">
+            <div class="font-semibold">Business Clearance Certificate</div>
+            <div class="text-xs">Barangay Management System</div>
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center">
+          <!-- Enhanced Left Seal -->
+          <div class="flex-shrink-0">
+            <div class="w-24 h-24 border-4 border-white rounded-full flex items-center justify-center bg-white bg-opacity-20 backdrop-blur-sm">
+              <div class="w-20 h-20 border-4 border-yellow-400 rounded-full flex items-center justify-center bg-white">
+                <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center">
+                  <div class="text-white text-xs font-bold text-center">
+                    <div>REPUBLIC</div>
+                    <div>OF THE</div>
+                    <div>PHILIPPINES</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Enhanced Government Info -->
+          <div class="text-center flex-1 px-8">
+            <div class="text-lg font-bold mb-2">REPUBLIC OF THE PHILIPPINES</div>
+            <div class="text-base font-semibold mb-1">Province of Davao Del Sur</div>
+            <div class="text-base font-semibold mb-1">Municipality of Hagonoy</div>
+            <div class="text-base font-semibold mb-1">Barangay Clib</div>
+            <div class="text-sm opacity-90 mt-2">
+              <div>📞 Mobile: 0919-1234567</div>
+              <div>📧 Email: barangay.clib&#64;hagonoy.gov.ph</div>
+            </div>
+          </div>
+          
+          <!-- Enhanced Right Seal -->
+          <div class="flex-shrink-0">
+            <div class="w-20 h-20 border-4 border-white rounded-full flex items-center justify-center bg-white bg-opacity-20 backdrop-blur-sm">
+              <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center">
+                <div class="text-white text-xs font-bold text-center">
+                  <div>BARANGAY</div>
+                  <div>SEAL</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Title Section -->
+      <div class="text-center py-8 bg-gradient-to-b from-gray-50 to-white">
+        <div class="text-xl font-bold text-gray-800 mb-3 tracking-wide">OFFICE OF THE BARANGAY CAPTAIN</div>
+        <div class="text-4xl font-bold text-blue-700 mb-2 tracking-wider">BARANGAY BUSINESS CLEARANCE</div>
+        <div class="text-lg text-gray-600 font-semibold">CERTIFICATE OF BUSINESS PERMIT</div>
+        <div class="w-32 h-1 bg-gradient-to-r from-blue-600 to-red-600 mx-auto mt-4 rounded-full"></div>
+      </div>
+
+      <!-- Certificate Number and Details -->
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mx-6 mb-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="text-sm font-semibold text-blue-800">Certificate Number:</div>
+            <div class="text-lg font-bold text-blue-900">{{ certificate.certificateNumber }}</div>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-blue-800">Valid Until:</div>
+            <div class="text-lg font-bold text-blue-900">{{ certificate.expiryDate | date:'MMM dd, yyyy' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Granted To Section -->
+      <div class="px-6 mb-8">
+        <div class="text-center mb-6">
+          <div class="text-xl font-bold text-gray-800 mb-6">GRANTED TO:</div>
+          
+          <div class="bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300 mb-4">
+            <div class="text-2xl font-bold text-gray-900 mb-2 border-b-2 border-gray-400 pb-2">
+              {{ certificate.userName }}
+            </div>
+            <div class="text-sm text-gray-600 font-semibold">BUSINESS OWNER / PROPRIETOR</div>
+          </div>
+          
+          <div class="bg-gray-50 p-6 rounded-lg border-2 border-dashed border-gray-300">
+            <div class="text-2xl font-bold text-gray-900 mb-2 border-b-2 border-gray-400 pb-2">
+              {{ certificate.userName }} Business Enterprise
+            </div>
+            <div class="text-sm text-gray-600 font-semibold">BUSINESS NAME / ESTABLISHMENT</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body Text with Enhanced Styling -->
+      <div class="px-6 mb-8 text-justify">
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+          <div class="text-lg font-bold text-gray-800 mb-3">📋 CERTIFICATION DETAILS:</div>
+        </div>
+        
+        <div class="space-y-4 text-gray-800 leading-relaxed">
+          <p class="text-lg">
+            This <strong class="text-blue-700">Business Clearance Certificate</strong> is hereby granted in accordance with 
+            <strong>Section 152 of Republic Act No. 7160 (Local Government Code)</strong> and the Barangay Tax Ordinance, 
+            provided that all necessary fees and requirements have been duly paid and complied with.
+          </p>
+          
+          <p class="text-lg">
+            This certificate is <strong class="text-red-600">non-transferable</strong> and shall be deemed 
+            <strong class="text-red-600">null and void</strong> upon failure by the business owner to comply with 
+            the rules and regulations set forth by the Local Government Unit of Hagonoy.
+          </p>
+          
+          <p class="text-lg">
+            <strong class="text-green-700">IMPORTANT:</strong> This permit must be posted in a conspicuous place 
+            within the business premises and shall be subject to inspection by authorized barangay officials.
+          </p>
+          
+          <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-6">
+            <p class="text-lg font-semibold text-blue-800">
+              Given this <strong>{{ certificate.issuedDate | date:'MMMM dd, yyyy' }}</strong> at the Office of the Punong Barangay, 
+              <strong>Barangay Clib, Municipality of Hagonoy, Province of Davao Del Sur, Philippines</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Signatory Section -->
+      <div class="px-6 mb-8">
+        <div class="flex justify-end">
+          <div class="text-center">
+            <div class="mb-4">
+              <div class="w-32 h-1 bg-gray-400 mx-auto mb-2"></div>
+              <div class="text-xl font-bold text-gray-800 mb-1">SARAH C. BUAT</div>
+              <div class="text-sm text-gray-600 font-semibold">PUNONG BARANGAY</div>
+              <div class="text-xs text-gray-500">Barangay Clib</div>
+            </div>
+            <div class="text-xs text-gray-500 italic">
+              "In the service of our community"
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Footer -->
+      <div class="bg-gray-100 border-t-2 border-gray-300 p-4">
+        <div class="flex justify-between items-center text-xs text-gray-600">
+          <div class="flex space-x-4">
+            <div>📄 Certificate No. {{ certificate.certificateNumber }}</div>
+            <div>📅 Issued: {{ certificate.issuedDate | date:'MM/dd/yyyy' }}</div>
+            <div *ngIf="certificate.expiryDate">⏰ Expires: {{ certificate.expiryDate | date:'MM/dd/yyyy' }}</div>
+          </div>
+          <div class="text-right">
+            <div>Page 1 of 1</div>
+            <div class="text-xs text-gray-500">Generated by Barangay Management System</div>
+          </div>
+        </div>
+        
+        <div class="mt-2 text-xs text-gray-500 text-center italic">
+          ⚠️ This certificate is valid only for the business operations specified and must be renewed annually.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

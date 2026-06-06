@@ -1,0 +1,137 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">My Profile</h1>
+    <p class="page-subtitle">Manage your personal information and password</p>
+  </div>
+
+  <div *ngIf="!currentUser && !isLoading" class="card p-6 text-center">
+    <p class="text-gray-600">Please log in to view and update your profile.</p>
+  </div>
+
+  <div *ngIf="isLoading" class="card p-6 text-center text-gray-500">
+    Loading your profile...
+  </div>
+
+  <div *ngIf="currentUser && !isLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="card">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+      <h2 class="text-xl font-semibold text-gray-900">Personal Information</h2>
+      <span class="text-xs font-medium uppercase tracking-wide text-primary-700 bg-primary-50 px-2.5 py-1 rounded-full w-fit">
+        Resident Account
+      </span>
+    </div>
+    <p *ngIf="memberSince" class="text-sm text-gray-500 mb-4">
+      Member since {{ memberSince | date:'mediumDate' }}
+    </p>
+    <form class="space-y-6">
+
+      <!-- Name Fields -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+          <input type="text" class="input-field" [(ngModel)]="userProfile.firstName" name="firstName" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Middle Name (Optional)</label>
+          <input type="text" class="input-field" [(ngModel)]="userProfile.middleName" name="middleName" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+          <input type="text" class="input-field" [(ngModel)]="userProfile.lastName" name="lastName" />
+        </div>
+      </div>
+
+      <!-- Suffix -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Suffix (Optional)</label>
+        <input type="text" class="input-field" [(ngModel)]="userProfile.suffix" name="suffix" />
+      </div>
+
+      <!-- Email & Phone -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <input type="email" class="input-field bg-gray-50" [(ngModel)]="userProfile.email" name="email" readonly />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+          <input type="tel" class="input-field" [(ngModel)]="userProfile.phone" name="phone" />
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+        <textarea class="input-field resize-none" rows="3" [(ngModel)]="userProfile.address" name="address"></textarea>
+      </div>
+
+      <!-- Birthdate & Occupation -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Birth Date</label>
+          <input type="date" class="input-field" [(ngModel)]="userProfile.birthDate" name="birthDate" />
+        </div>
+      </div>
+
+      <!-- Gender & Civil Status -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+          <select class="input-field" [(ngModel)]="userProfile.gender" name="gender">
+            <option value="" disabled>Select gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Civil Status</label>
+          <select class="input-field" [(ngModel)]="userProfile.civilStatus" name="civilStatus">
+            <option value="" disabled>Select status</option>
+            <option>Single</option>
+            <option>Married</option>
+            <option>Widowed</option>
+            <option>Separated</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Nationality -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Nationality</label>
+        <input type="text" class="input-field" [(ngModel)]="userProfile.nationality" name="nationality" />
+      </div>
+
+      <!-- Purok & Resident Since (used on appointment requests) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Purok</label>
+          <input type="text" class="input-field" [(ngModel)]="userProfile.purok" name="purok" placeholder="e.g., Purok 1" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Resident Since (Year)</label>
+          <input type="number" class="input-field" [(ngModel)]="userProfile.residentSince" name="residentSince" placeholder="e.g., 2010" />
+        </div>
+      </div>
+
+      <!-- Message -->
+      <div *ngIf="message" class="p-3 rounded-lg bg-green-50 text-green-800 text-sm">
+        {{ message }}
+      </div>
+
+      <!-- Submit -->
+      <div class="flex justify-end">
+        <button (click)="updateProfile()" [disabled]="isSaving" class="btn-primary" type="button">
+          {{ isSaving ? 'Saving...' : 'Update Profile' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 class="text-xl font-semibold text-gray-900 mb-6">Change Password</h2>
+    <app-change-password [passwordChangedAt]="passwordChangedAt"></app-change-password>
+  </div>
+  </div>
+</div>

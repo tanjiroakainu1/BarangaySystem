@@ -1,0 +1,123 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CertificateService, Certificate, formatIssuedDate, buildCertificateFromRequest } from '../../../../services/certificate.service';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
+@Component({
+  selector: 'app-generic-certificate',
+  templateUrl: './generic-certificate.component.html',
+  styleUrls: ['./generic-certificate.component.scss']
+})
+export class GenericCertificateComponent implements OnInit {
+  certificate: Certificate | null = null;
+  isLoading = true;
+  error = '';
+  formatIssuedDate = formatIssuedDate;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private certificateService: CertificateService
+  ) {}
+
+  ngOnInit(): void {
+    const requestId = this.route.snapshot.paramMap.get('requestId');
+    if (requestId) {
+      this.loadCertificateFromRequest(requestId);
+      return;
+    }
+    const certificateId = this.route.snapshot.paramMap.get('id');
+    if (certificateId) {
+      this.loadCertificate(parseInt(certificateId, 10));
+    } else {
+      this.error = 'Certificate ID not provided';
+      this.isLoading = false;
+    }
+  }
+
+  loadCertificateFromRequest(requestId: string): void {
+    this.certificateService.getAppointmentById(requestId).subscribe({
+      next: (request) => {
+        if (!request) {
+          this.error = 'Request not found';
+          this.isLoading = false;
+          return;
+        }
+        const status = (request.status || '').toLowerCase();
+        if (status !== 'completed') {
+          this.error = 'This certificate is only available for completed requests.';
+          this.isLoading = false;
+          return;
+        }
+        this.certificate = buildCertificateFromRequest(request);
+        this.isLoading = false;
+      },
+      error: () => {
+        this.error = 'Request not found';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadCertificate(id: number): void {
+    // Ensure certificates are loaded (API or mock) before resolving by id; fixes direct URL view
+    this.certificateService.getAllCertificates().subscribe({
+      next: (certificates) => {
+        this.certificate = certificates.find((c: Certificate) => String(c.id) === String(id)) || null;
+        if (!this.certificate) {
+          this.error = 'Certificate not found';
+        } else if (this.certificate.status !== 'issued') {
+          this.error = 'Certificate is not yet issued';
+        }
+        this.isLoading = false;
+      },
+      error: () => {
+        this.error = 'Certificate not found';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  downloadPDF(): void {
+    if (!this.certificate) return;
+
+    const element = document.getElementById('certificate-content');
+    if (!element) return;
+
+    html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true
+    }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const certNum = this.certificate!.certificateNumber || 'export';
+      const namePart = (this.certificate!.userName || 'certificate').replace(/\s+/g, '_');
+      const fileName = `${this.certificate!.certificateType.replace(/\s+/g, '_')}_${certNum}_${namePart}.pdf`;
+      pdf.save(fileName);
+    });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/admin/certificates']);
+  }
+}

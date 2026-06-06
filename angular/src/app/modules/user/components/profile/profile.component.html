@@ -1,0 +1,105 @@
+<div class="p-6">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">My Profile</h1>
+    <p class="text-gray-600 mt-2">Manage your personal information</p>
+  </div>
+
+  <div *ngIf="!currentUser" class="card p-6 text-center">
+    <p class="text-gray-600">Please log in to view and update your profile.</p>
+  </div>
+
+  <div *ngIf="currentUser" class="card">
+    <h2 class="text-xl font-semibold text-gray-900 mb-6">Personal Information</h2>
+    <form class="space-y-6">
+
+      <!-- Name Fields -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+          <input type="text" class="input-field" [(ngModel)]="userProfile.firstName" name="firstName" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Middle Name (Optional)</label>
+          <input type="text" class="input-field" [(ngModel)]="userProfile.middleName" name="middleName" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+          <input type="text" class="input-field" [(ngModel)]="userProfile.lastName" name="lastName" />
+        </div>
+      </div>
+
+      <!-- Suffix -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Suffix (Optional)</label>
+        <input type="text" class="input-field" [(ngModel)]="userProfile.suffix" name="suffix" />
+      </div>
+
+      <!-- Email & Phone -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <input type="email" class="input-field" [(ngModel)]="userProfile.email" name="email" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+          <input type="tel" class="input-field" [(ngModel)]="userProfile.phone" name="phone" />
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+        <textarea class="input-field resize-none" rows="3" [(ngModel)]="userProfile.address" name="address"></textarea>
+      </div>
+
+      <!-- Birthdate & Occupation -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Birth Date</label>
+          <input type="date" class="input-field" [(ngModel)]="userProfile.birthDate" name="birthDate" />
+        </div>
+      </div>
+
+      <!-- Gender & Civil Status -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+          <select class="input-field" [(ngModel)]="userProfile.gender" name="gender">
+            <option value="" disabled>Select gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Prefer not to say</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Civil Status</label>
+          <select class="input-field" [(ngModel)]="userProfile.civilStatus" name="civilStatus">
+            <option value="" disabled>Select status</option>
+            <option>Single</option>
+            <option>Married</option>
+            <option>Widowed</option>
+            <option>Separated</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Nationality -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Nationality</label>
+        <input type="text" class="input-field" [(ngModel)]="userProfile.nationality" name="nationality" />
+      </div>
+
+      <!-- Message -->
+      <div *ngIf="message" class="p-3 rounded-lg bg-green-50 text-green-800 text-sm">
+        {{ message }}
+      </div>
+
+      <!-- Submit -->
+      <div class="flex justify-end">
+        <button (click)="updateProfile()" [disabled]="isSaving" class="btn-primary" type="button">
+          {{ isSaving ? 'Saving...' : 'Update Profile' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

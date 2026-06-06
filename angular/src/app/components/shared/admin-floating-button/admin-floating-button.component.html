@@ -1,0 +1,42 @@
+<div
+  *ngIf="shouldShow"
+  class="admin-floating-button fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+  <div
+    class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden transition-all duration-300 ease-out"
+    [class.w-72]="isExpanded"
+    [class.w-14]="!isExpanded"
+    [class.h-auto]="isExpanded"
+    [class.h-14]="!isExpanded">
+    <button
+      type="button"
+      (click)="toggle()"
+      class="w-full flex items-center justify-between gap-2 p-3 text-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-inset rounded-2xl">
+      <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </span>
+      <span class="text-sm font-semibold text-gray-700 truncate" *ngIf="isExpanded">Quick link</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 text-gray-500 shrink-0 transition-transform duration-200"
+        [class.rotate-180]="isExpanded"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+    <div *ngIf="isExpanded" class="px-3 pb-3 pt-0 border-t border-gray-100">
+      <p class="text-xs text-gray-600 mt-2 mb-3">
+        Welcome! We're glad you're here. If you need anything, we're just a click away.
+      </p>
+      <a
+        routerLink="/admin-login"
+        class="block w-full py-2.5 px-4 rounded-lg font-medium text-center bg-gradient-to-r from-emerald-600 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+        Thank you
+      </a>
+    </div>
+  </div>
+</div>

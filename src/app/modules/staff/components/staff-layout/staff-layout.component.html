@@ -1,0 +1,24 @@
+<div class="min-h-screen bg-gray-50 flex flex-col">
+  <app-staff-navbar></app-staff-navbar>
+
+  <div class="flex flex-1 min-h-0 relative">
+    <div
+      *ngIf="sidebar.isOpen$ | async"
+      class="fixed inset-0 z-30 bg-gray-900/60 backdrop-blur-sm lg:hidden"
+      (click)="sidebar.close()"
+      aria-hidden="true">
+    </div>
+
+    <aside
+      class="fixed top-14 sm:top-16 bottom-0 left-0 z-40 w-72 max-w-[85vw] transform transition-transform duration-300 ease-in-out lg:static lg:top-auto lg:bottom-auto lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 flex-shrink-0"
+      [class.-translate-x-full]="!(sidebar.isOpen$ | async)"
+      [class.translate-x-0]="sidebar.isOpen$ | async"
+      [attr.aria-hidden]="!(sidebar.isOpen$ | async) ? true : null">
+      <app-staff-sidebar></app-staff-sidebar>
+    </aside>
+
+    <main class="flex-1 overflow-auto min-w-0 w-full">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

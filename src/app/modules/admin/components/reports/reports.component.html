@@ -1,0 +1,104 @@
+<div class="page-container">
+  <div class="page-header toolbar-row">
+    <div>
+      <h1 class="page-title">Reports & Analytics</h1>
+      <p class="page-subtitle">Comprehensive barangay system insights and trends</p>
+      <p class="text-xs text-gray-400 mt-1">Last updated: {{ generatedAt | date:'medium' }}</p>
+    </div>
+    <div class="action-row w-full sm:w-auto">
+      <button (click)="refreshReports()" class="btn-outline text-sm w-full xs:w-auto">Refresh Data</button>
+      <button (click)="generateReport()" class="btn-primary text-sm w-full xs:w-auto">Export / Print</button>
+    </div>
+  </div>
+
+  <!-- Summary KPIs -->
+  <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+    <div class="card border-l-4 border-l-primary-600">
+      <p class="text-sm font-medium text-gray-500">Total Users</p>
+      <p class="text-2xl sm:text-3xl font-bold text-primary-700 mt-1">{{ totalUsers }}</p>
+      <p class="text-xs text-gray-400 mt-1">Registered in system</p>
+    </div>
+    <div class="card border-l-4 border-l-secondary-600">
+      <p class="text-sm font-medium text-gray-500">Total Appointments</p>
+      <p class="text-2xl sm:text-3xl font-bold text-secondary-700 mt-1">{{ totalAppointments }}</p>
+      <p class="text-xs text-gray-400 mt-1">All time requests</p>
+    </div>
+    <div class="card border-l-4 border-l-green-500">
+      <p class="text-sm font-medium text-gray-500">Certificates Issued</p>
+      <p class="text-2xl sm:text-3xl font-bold text-green-700 mt-1">{{ totalCertificates }}</p>
+      <p class="text-xs text-gray-400 mt-1">Documents processed</p>
+    </div>
+  </div>
+
+  <!-- Full Chart Gallery -->
+  <div *ngIf="chartsLoaded">
+    <h2 class="text-lg font-bold text-gray-900 mb-4">Citizen & Document Reports</h2>
+    <div class="chart-grid mb-8">
+      <app-crazy-chart
+        title="Appointment Trends"
+        subtitle="Weekly request volume analysis"
+        badge="7-DAY"
+        [height]="320"
+        [config]="appointmentTrendChart">
+      </app-crazy-chart>
+      <app-crazy-chart
+        title="Status Distribution"
+        subtitle="Pipeline health overview"
+        badge="LIVE"
+        [height]="320"
+        [config]="statusChart">
+      </app-crazy-chart>
+      <app-crazy-chart
+        title="Certificate Breakdown"
+        subtitle="Document type popularity"
+        badge="TYPES"
+        [height]="300"
+        [config]="certificateChart">
+      </app-crazy-chart>
+      <app-crazy-chart
+        title="Hourly Activity"
+        subtitle="Barangay hall traffic patterns"
+        badge="PEAK"
+        [height]="300"
+        [config]="weeklyChart">
+      </app-crazy-chart>
+    </div>
+
+    <h2 class="text-lg font-bold text-gray-900 mb-4">Performance & Financial Reports</h2>
+    <div class="chart-grid mb-8">
+      <app-crazy-chart
+        title="Service Performance"
+        subtitle="Efficiency vs targets radar"
+        badge="KPI"
+        [height]="340"
+        [config]="radarChart">
+      </app-crazy-chart>
+      <app-crazy-chart
+        title="Revenue Streams"
+        subtitle="Certificate fees & court rentals (₱)"
+        badge="₱ REV"
+        [height]="340"
+        [config]="revenueChart">
+      </app-crazy-chart>
+    </div>
+  </div>
+
+  <!-- Report Actions -->
+  <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Citizen Reports</h3>
+      <p class="text-gray-600 mb-4 text-sm">Demographics, registrations, and resident statistics</p>
+      <button (click)="generateReport()" class="btn-primary w-full">Generate PDF</button>
+    </div>
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Document Reports</h3>
+      <p class="text-gray-600 mb-4 text-sm">Processing times, volumes, and certificate trends</p>
+      <button (click)="refreshReports()" class="btn-secondary w-full">Refresh Charts</button>
+    </div>
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Financial Reports</h3>
+      <p class="text-gray-600 mb-4 text-sm">Revenue from certificates and facility rentals</p>
+      <button (click)="generateReport()" class="btn-outline w-full">Print Report</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="p-6">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Reports</h1>
+    <p class="text-gray-600 mt-2">Generate and view system reports</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Citizen Reports</h3>
+      <p class="text-gray-600 mb-4">Generate reports on citizen demographics and statistics</p>
+      <button (click)="generateReport()" class="btn-primary">Generate Report</button>
+    </div>
+
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Document Reports</h3>
+      <p class="text-gray-600 mb-4">View document processing statistics and trends</p>
+      <button (click)="generateReport()" class="btn-primary">Generate Report</button>
+    </div>
+
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Reports</h3>
+      <p class="text-gray-600 mb-4">Track revenue and expenses for barangay operations</p>
+      <button (click)="generateReport()" class="btn-primary">Generate Report</button>
+    </div>
+  </div>
+</div>

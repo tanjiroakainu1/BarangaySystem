@@ -1,0 +1,167 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Admin Dashboard</h1>
+    <p class="page-subtitle">Welcome to the Barangay System Admin Panel</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stat-grid mb-6 sm:mb-8">
+    <div class="card">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">Total Users</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ stats.totalUsers }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">Pending Appointments</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ stats.pendingAppointments }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">Completed Appointments</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ stats.completedAppointments }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">Total Certificates</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ stats.totalCertificates }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Charts -->
+  <div class="page-header">
+    <div class="toolbar-row mb-4">
+      <div>
+        <h2 class="text-lg sm:text-xl font-bold text-gray-900">Analytics Overview</h2>
+        <p class="text-sm text-gray-500">Real-time barangay service metrics</p>
+      </div>
+      <button (click)="navigateToReports()" class="btn-outline text-sm w-full sm:w-auto">Full Reports →</button>
+    </div>
+    <div *ngIf="chartsLoaded" class="chart-grid">
+      <app-crazy-chart
+        title="Appointment Pulse"
+        subtitle="7-day request & completion trends"
+        badge="TRENDING"
+        [height]="300"
+        [config]="appointmentTrendChart">
+      </app-crazy-chart>
+      <app-crazy-chart
+        title="Status Breakdown"
+        subtitle="Current appointment pipeline"
+        badge="LIVE"
+        [height]="300"
+        [config]="statusChart">
+      </app-crazy-chart>
+      <app-crazy-chart
+        title="Certificate Types"
+        subtitle="Most requested documents"
+        badge="TOP"
+        [height]="280"
+        [config]="certificateChart">
+      </app-crazy-chart>
+      <app-crazy-chart
+        title="Hourly Traffic"
+        subtitle="Peak barangay hall activity"
+        badge="HEAT"
+        [height]="280"
+        [config]="weeklyChart">
+      </app-crazy-chart>
+    </div>
+  </div>
+
+  <!-- Recent Activities -->
+  <div class="content-grid-2">
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activities</h3>
+      <div class="space-y-4">
+        <div *ngFor="let activity of recentActivities" class="flex items-start space-x-3">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center"
+                 [ngClass]="{
+                   'bg-primary-100': activity.type === 'citizen',
+                   'bg-green-100': activity.type === 'document'
+                 }">
+              <svg *ngIf="activity.type === 'citizen'" class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <svg *ngIf="activity.type === 'document'" class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-900">{{ activity.description }}</p>
+            <p class="text-xs text-gray-500">{{ activity.time }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+      <div class="space-y-3">
+        <button (click)="navigateToAppointments()" class="w-full btn-primary text-left">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          Manage Appointments
+        </button>
+        <button (click)="navigateToUsers()" class="w-full btn-secondary text-left">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          Manage Users
+        </button>
+        <button (click)="navigateToDocuments()" class="w-full btn-outline text-left">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Manage Documents
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+<div class="min-h-screen gradient-bg flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="text-center">
+      <h2 class="text-3xl font-bold gradient-text mb-2">Admin & Staff Portal</h2>
+      <p class="text-gray-600">Access the barangay management system administration panel</p>
+    </div>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="card">
+      <form [formGroup]="adminLoginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+        <!-- EMAIL -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+            Email address
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            formControlName="email"
+            class="input-field"
+            [class.border-red-500]="adminLoginForm.get('email')?.invalid && adminLoginForm.get('email')?.touched"
+            placeholder="Enter your admin/staff email"
+          />
+          <div *ngIf="adminLoginForm.get('email')?.invalid && adminLoginForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
+            <span *ngIf="adminLoginForm.get('email')?.errors?.['required']">Email is required</span>
+            <span *ngIf="adminLoginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+          </div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            Password
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            formControlName="password"
+            class="input-field"
+            [class.border-red-500]="adminLoginForm.get('password')?.invalid && adminLoginForm.get('password')?.touched"
+            placeholder="Enter your password"
+          />
+          <div *ngIf="adminLoginForm.get('password')?.invalid && adminLoginForm.get('password')?.touched" class="mt-1 text-sm text-red-600">
+            <span *ngIf="adminLoginForm.get('password')?.errors?.['required']">Password is required</span>
+            <span *ngIf="adminLoginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+            />
+            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+              Remember me
+            </label>
+          </div>
+
+          <div class="text-sm">
+            <a href="#" class="font-medium text-primary-600 hover:text-primary-500">
+              Forgot your password?
+            </a>
+          </div>
+        </div>
+
+        <!-- ERROR MESSAGE -->
+        <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          {{ errorMessage }}
+        </div>
+
+        <!-- LOGIN BUTTON -->
+        <div>
+          <button
+            type="submit"
+            [disabled]="isLoading"
+            class="w-full btn-primary flex justify-center py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span *ngIf="!isLoading">Sign in to Admin Portal</span>
+            <span *ngIf="isLoading" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Signing in...
+            </span>
+          </button>
+        </div>
+
+        <!-- NAV LINKS -->
+        <div class="text-center mt-4 space-y-2">
+          <div>
+            <span class="text-sm text-gray-600">
+              Don't have an account?
+              <button type="button" (click)="navigateToRegister()" class="font-medium text-primary-600 hover:text-primary-500">
+                Sign up here
+              </button>
+            </span>
+          </div>
+          <div>
+            <span class="text-sm text-gray-600">
+              Regular user?
+              <button type="button" (click)="navigateToRegularLogin()" class="font-medium text-primary-600 hover:text-primary-500">
+                User Login
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="mt-6 text-center">
+      <button type="button" (click)="navigateToHome()" class="text-sm text-gray-600 hover:text-primary-600">
+        ← Back to Home
+      </button>
+    </div>
+  </div>
+</div>

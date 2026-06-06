@@ -1,0 +1,47 @@
+<nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+  <div class="px-3 sm:px-4 lg:px-8">
+    <div class="flex justify-between items-center h-14 sm:h-16 gap-2">
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+        <button
+          type="button"
+          (click)="sidebar.toggle()"
+          class="lg:hidden flex-shrink-0 p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-primary-700 transition-colors"
+          [attr.aria-label]="(sidebar.isOpen$ | async) ? 'Close menu' : 'Open menu'"
+          [attr.aria-expanded]="sidebar.isOpen$ | async">
+          <svg *ngIf="!(sidebar.isOpen$ | async)" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg *ngIf="sidebar.isOpen$ | async" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+        <h1 class="text-base sm:text-xl font-bold gradient-text truncate">
+          Barangay System
+          <span class="hidden sm:inline text-base font-medium text-gray-500"> — Staff</span>
+        </h1>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+        <div class="hidden md:flex items-center gap-3">
+          <div class="text-right">
+            <div class="text-sm font-medium text-gray-900 truncate max-w-[140px] lg:max-w-none">
+              {{ currentUser?.firstName }} {{ currentUser?.lastName }}
+            </div>
+            <div class="text-xs text-gray-500 truncate max-w-[140px] lg:max-w-none">{{ currentUser?.email }}</div>
+          </div>
+        </div>
+        <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+          <span class="text-xs sm:text-sm font-medium text-primary-600">
+            {{ currentUser?.firstName?.charAt(0) }}{{ currentUser?.lastName?.charAt(0) }}
+          </span>
+        </div>
+        <button type="button" (click)="navigateToDashboard()" class="hidden sm:inline-flex btn-primary btn-sm">
+          Dashboard
+        </button>
+        <button type="button" (click)="logout()" class="btn-outline btn-sm">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

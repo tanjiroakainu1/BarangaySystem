@@ -1,0 +1,124 @@
+<!-- Mobile / tablet backdrop -->
+<div
+  *ngIf="isOpen && !isDocked"
+  class="ai-backdrop"
+  (click)="close()"
+  aria-hidden="true">
+</div>
+
+<!-- Floating launcher -->
+<button
+  *ngIf="!isOpen"
+  type="button"
+  class="ai-fab"
+  (click)="toggleChat()"
+  [attr.aria-label]="'Open ' + copy.title">
+  <span class="ai-fab-pulse"></span>
+  <span class="ai-fab-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/>
+    </svg>
+  </span>
+  <span class="ai-fab-label">{{ copy.fabLabel }}</span>
+</button>
+
+<!-- Chat panel -->
+<div
+  *ngIf="isOpen"
+  class="ai-panel"
+  [class.ai-panel-docked]="isDocked"
+  [class.ai-panel-sheet]="!isDocked"
+  [class.ai-panel-minimized]="isMinimized"
+  role="dialog"
+  [attr.aria-label]="copy.title + ' assistant'"
+  aria-modal="true">
+  <!-- Header -->
+  <div class="ai-header">
+    <div class="ai-header-left">
+      <div class="ai-avatar">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7v1h1a1 1 0 011 1v3a1 1 0 01-1 1h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 01-1-1v-3a1 1 0 011-1h1v-1a7 7 0 017-7h1V5.73A2 2 0 0112 2z"/></svg>
+      </div>
+      <div class="ai-header-text">
+        <h3 class="ai-title">{{ copy.title }}</h3>
+        <p class="ai-subtitle">
+          <span class="ai-context-badge">{{ contextLabel }}</span>
+          <span class="ai-subtitle-hint">{{ copy.subtitle }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="ai-header-actions">
+      <button type="button" class="ai-icon-btn" (click)="clearChat()" title="Clear chat" aria-label="Clear chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+      </button>
+      <button type="button" class="ai-icon-btn" (click)="isMinimized ? restore() : minimize()" [title]="isMinimized ? 'Expand' : 'Minimize'" [attr.aria-label]="isMinimized ? 'Expand chat' : 'Minimize chat'">
+        <svg *ngIf="!isMinimized" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+        <svg *ngIf="isMinimized" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15l7-7 7 7"/></svg>
+      </button>
+      <button type="button" class="ai-icon-btn" (click)="close()" title="Close" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!isMinimized">
+    <!-- Quick questions -->
+    <div class="ai-quick-scroll" role="list" aria-label="Quick questions">
+      <button
+        *ngFor="let q of quickQuestions"
+        type="button"
+        class="ai-quick-chip"
+        role="listitem"
+        [title]="q"
+        (click)="askQuick(q)"
+        [disabled]="isLoading">
+        {{ q }}
+      </button>
+    </div>
+
+    <!-- Messages -->
+    <div class="ai-messages" aria-live="polite">
+      <div
+        *ngFor="let msg of messages"
+        class="ai-msg"
+        [class.ai-msg-user]="msg.role === 'user'"
+        [class.ai-msg-bot]="msg.role === 'assistant'"
+        [class.ai-msg-streaming]="msg.role === 'assistant' && isLoading && !msg.content">
+        <div class="ai-msg-bubble" [innerHTML]="formatContent(msg.content) || (msg.role === 'assistant' && isLoading ? '...' : '')"></div>
+        <span *ngIf="msg.content" class="ai-msg-time">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+
+      <div *ngIf="isLoading && messages[messages.length - 1]?.content" class="ai-streaming-hint">
+        <span class="ai-streaming-dot"></span>
+        Streaming response...
+      </div>
+
+      <div *ngIf="errorText" class="ai-error">{{ errorText }}</div>
+      <div #messagesEnd></div>
+    </div>
+
+    <!-- Input -->
+    <div class="ai-input-area">
+      <textarea
+        #chatInput
+        class="ai-input"
+        [(ngModel)]="inputText"
+        (keydown)="onKeydown($event)"
+        [placeholder]="copy.placeholder"
+        rows="2"
+        [disabled]="isLoading"
+        [attr.aria-label]="'Message to ' + copy.title"></textarea>
+      <button
+        type="button"
+        class="ai-send-btn"
+        (click)="send()"
+        [disabled]="isLoading || !inputText.trim()"
+        aria-label="Send message">
+        <svg *ngIf="!isLoading" viewBox="0 0 24 24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-.528 60.516 60.516 0 00-18.445-8.986z"/></svg>
+        <svg *ngIf="isLoading" class="ai-send-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
+          <path d="M12 3a9 9 0 019 9" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </ng-container>
+</div>

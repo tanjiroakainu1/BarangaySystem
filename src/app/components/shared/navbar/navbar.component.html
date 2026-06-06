@@ -1,0 +1,66 @@
+<nav class="navbar sticky top-0 z-50" *ngIf="shouldShowNavbar">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-14 sm:h-16">
+      <div class="flex items-center min-w-0 flex-1 gap-2">
+        <div class="flex-shrink-0">
+          <h1 class="text-lg sm:text-xl font-bold gradient-text cursor-pointer truncate" (click)="navigateToHome()">
+            Barangay System
+          </h1>
+        </div>
+        <div class="hidden md:block ml-6 lg:ml-10">
+          <div class="flex items-baseline space-x-2 lg:space-x-4">
+            <a href="#" class="text-gray-700 hover:text-primary-600 px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">About</a>
+            <a href="#" class="text-gray-700 hover:text-primary-600 px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Services</a>
+            <a href="#" class="text-gray-700 hover:text-primary-600 px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contact</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop actions -->
+      <div class="hidden sm:flex items-center space-x-3 flex-shrink-0">
+        <ng-container *ngIf="!currentUser">
+          <button class="btn-outline btn-sm" (click)="navigateToLogin()">Login</button>
+          <button class="btn-primary btn-sm" (click)="navigateToRegister()">Register</button>
+        </ng-container>
+        <ng-container *ngIf="currentUser">
+          <span class="text-sm text-gray-700 hidden lg:inline font-medium">Welcome, {{ getDisplayName() }}</span>
+          <button class="btn-outline btn-sm" (click)="navigateToDashboard()">Dashboard</button>
+          <button class="btn-ghost btn-sm" (click)="logout()">Logout</button>
+        </ng-container>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button
+        type="button"
+        class="sm:hidden flex-shrink-0 p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+        (click)="toggleMobileMenu()"
+        [attr.aria-label]="mobileMenuOpen ? 'Close menu' : 'Open menu'"
+        [attr.aria-expanded]="mobileMenuOpen">
+        <svg *ngIf="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg *ngIf="mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile menu panel -->
+    <div *ngIf="mobileMenuOpen" class="sm:hidden border-t border-gray-200 py-3 space-y-1 animate-fade-in">
+      <a href="#" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" (click)="closeMobileMenu()">About</a>
+      <a href="#" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" (click)="closeMobileMenu()">Services</a>
+      <a href="#" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg" (click)="closeMobileMenu()">Contact</a>
+      <div class="border-t border-gray-100 pt-3 mt-2 space-y-2 px-1">
+        <ng-container *ngIf="!currentUser">
+          <button class="w-full btn-outline btn-sm" (click)="navigateToLogin(); closeMobileMenu()">Login</button>
+          <button class="w-full btn-primary btn-sm" (click)="navigateToRegister(); closeMobileMenu()">Register</button>
+        </ng-container>
+        <ng-container *ngIf="currentUser">
+          <p class="px-2 text-sm text-gray-600">Welcome, {{ getDisplayName() }}</p>
+          <button class="w-full btn-outline btn-sm" (click)="navigateToDashboard(); closeMobileMenu()">Dashboard</button>
+          <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg" (click)="logout(); closeMobileMenu()">Logout</button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</nav>

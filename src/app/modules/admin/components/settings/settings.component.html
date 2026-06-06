@@ -1,0 +1,32 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Configure barangay general information</p>
+  </div>
+
+  <div *ngIf="isLoading" class="text-gray-500">Loading settings...</div>
+
+  <div *ngIf="!isLoading" class="max-w-xl">
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">General Settings</h3>
+      <form class="space-y-4" (ngSubmit)="saveSettings()">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Barangay Name</label>
+          <input type="text" class="input-field" [(ngModel)]="settings.barangayName" name="barangayName" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Barangay Captain</label>
+          <input type="text" class="input-field" [(ngModel)]="settings.barangayCaptain" name="barangayCaptain" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Contact Number</label>
+          <input type="tel" class="input-field" [(ngModel)]="settings.contactNumber" name="contactNumber" />
+        </div>
+        <button type="submit" class="btn-primary" [disabled]="isSaving">
+          {{ isSaving ? 'Saving...' : 'Save Settings' }}
+        </button>
+        <p *ngIf="message" class="text-sm text-primary-700">{{ message }}</p>
+      </form>
+    </div>
+  </div>
+</div>
