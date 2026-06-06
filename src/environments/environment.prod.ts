@@ -16,7 +16,7 @@ export const environment = {
     apiKey: envSecrets.openRouterApiKey,
     baseUrl: 'https://openrouter.ai/api/v1',
     model: envSecrets.openRouterModel,
-    siteUrl: 'https://barangay-system.app',
+    siteUrl: 'https://barangay-system1.vercel.app',
     siteName: 'Barangay System',
   },
 };
